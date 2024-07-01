@@ -13,10 +13,11 @@ include("basedatos.php");
 </head>
 <header class="titulo">
     <div id="placeholderInicioSesionYUsuario" style="position: absolute;">
+        <button style="display: block;left:0;position:fixed;top:15px;" onclick="moverMd()">MD</button>
         <button id="iniciarsesion" style="display:block;">
             <h3> Iniciar Sesión </h3>
         </button>
-        <h3 id="Bienvenida" style="display:none; margin-left:30px; top:25px">Bienvenido <?php echo $_SESSION["username"]; ?></h3>
+        <h3 id="Bienvenida" style="display:none; left:3%; position:fixed; top:5px">Bienvenido <?php echo $_SESSION["username"]; ?></h3>
     </div>
     <div id="cerrarSesi" style="position: absolute; left:93%; top: 15px;display:none">
         <a href="cerrarSesion.php" style="text-decoration:underline"> Cerrar sesión.</a>
@@ -50,7 +51,7 @@ include("basedatos.php");
                     }
                 }
                 if($cant>=1){
-                    echo "<button style='position:absolute; height:3px; width:1px; border-radius:50%; background-color:red'>$cant<button>";
+                    echo "<button style='position:absolute; height:fit-content; width:fit-content; border-radius:50%; background-color:red;'>$cant<button>";
                 }
             }
         ?>
@@ -79,6 +80,10 @@ include("basedatos.php");
         document.getElementById("Bienvenida").style.display = "block";
         document.getElementById("cerrarSesi").style.display = "block";
         document.getElementById("notif").style.display="block";
+    }
+    function moverMd(){
+        
+    window.location.replace("mensajesPriv.php" );
     }
 </script>
 <?php

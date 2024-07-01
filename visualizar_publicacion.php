@@ -38,7 +38,7 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
 </head>
 
 <body>
-    <div style="margin-left:15%; padding:20px; background-color:white; display:block; height:650px; overflow:scroll; overflow-x: hidden; ">
+    <div style="margin-left:15%; padding:20px; background-color:white; display:block; height:100%; overflow:scroll; overflow-x: hidden; ">
         <?php
         if (!isset($_GET['id'])) {
             die('ID de publicación no especificado.');
@@ -314,7 +314,7 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
                 echo "<div class='comentario' style='margin-left: " . ($parentID ? "20px" : "0") . "; display: flex; align-items: flex-start;'>";
                 echo "<img src='{$row['DirFotoPerfil']}' alt='Foto de perfil' style='width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;'>";
                 echo "<div>";
-                echo "<p><strong><a href='/mi-perfil?id={$row['usuarioID']}'>{$row['autor']}</a></strong> dijo:</p>";
+                echo "<p><strong><a href='http://localhost/web-aventuras/Perfil.php?idBuscar={$row['usuarioID']}'>{$row['autor']}</a></strong> dijo:</p>";
                 echo "<p>{$row['contenido']}</p>";
                 echo "<p><em>{$row['fecha']}</em></p>";
 

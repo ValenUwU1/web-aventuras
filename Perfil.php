@@ -30,8 +30,7 @@
     }
    else
    {
-    
-    echo '<script>window.location.href = "index.php";</script>';
+        echo '<script>window.location.href = "index.php";</script>';
     exit;
    }
 ?>
@@ -121,9 +120,11 @@
             </div>
         </div>
         </div>
-        <div id="botonPerfil" style="display:none; flex-direction:row ;top:17%; right:17%;">
+        <div id="botonPerfil" style="display:flex; flex-direction:row ;top:17%; right:17%;">
+            <div id="priv" style="visibility:hidden">
             <button onclick="mostrarModPerfil()"style="background-color:darkcyan;color:white;cursor:pointer; width:fit-content; height:fit-content;display:flex;">Editar Perfil</button><br>
-            <button onclick="mostrarIntercambios()" style="background-color:darkcyan;color:white; cursor:pointer;width:fit-content; height:fit-content;display:flex;">Mostrar Historial</button>
+            </div>
+            <button onclick="mostrarIntercambios()" id="hola" style="background-color:darkcyan;color:white; cursor:pointer;width:fit-content; height:fit-content;display:flex;">Mostrar Historial</button>
         </div>
         </div>
     </div>
@@ -136,6 +137,7 @@
             INNER JOIN embarcacion e2 ON i.fk_embarcacion2 = e2.id
             WHERE i.fk_usuario1 = $idajeno OR i.fk_usuario2 = $idajeno";
             $result=mysqli_query($conn,$sql);
+            if(mysqli_num_rows($result)!=0){
             while($row=mysqli_fetch_assoc($result)){
                 $nom1=$row["nom1"];
                 $nom2=$row["nom2"];
@@ -160,6 +162,10 @@
                 echo "</div>";
                 echo "</div>";
             }
+        }
+        else{
+            echo "<p>No hay ningun intercambio realizado.</p>";
+        }
         ?>
     </div>
     <div class= "contenedor" id="misBarcos" style="display:none; height:400px;">
@@ -297,6 +303,7 @@
 ?>
 <script>
 function mostrarValorar(){
+    document.getElementById("priv").style.display="hidden";
     document.getElementById("mostrarValoracion").style.visibility="visible";
 }
 document.addEventListener("DOMContentLoaded", function() {
@@ -413,6 +420,7 @@ function submitRating() {
         formbarco.style.display="none";
     }
     function mostrarMisBarcos(){
+        document.getElementById("priv").style.display="visible";
         document.getElementById("misBarcos").style.display="flex";
         document.getElementById("botonPerfil").style.display="flex";
     }
