@@ -17,7 +17,18 @@ include("basedatos.php");
         <button id="iniciarsesion" style="display:block;">
             <h3> Iniciar Sesión </h3>
         </button>
-        <h3 id="Bienvenida" style="display:none; left:3%; position:fixed; top:5px">Bienvenido <?php echo $_SESSION["username"]; ?></h3>
+        <div style=" left:3%; position:fixed; top:5px">   
+        <h3 id="Bienvenida" style="display:none;>Bienvenido <?php echo $_SESSION["username"]; ?></h3> <?php 
+        $id = $_SESSION["Id"];
+        $result = mysqli_query($conn, "SELECT * FROM usuario WHERE id = '$id'");
+        $valor = mysqli_fetch_assoc($result);
+        $_SESSION['esOwner']=true;
+        if (!empty($_SESSION["Id"]) && $_SESSION['esOwner']): ?>
+            <div style="position: fixed;z-index:10001 ;left: 50%; top: 15px;">
+                <button onclick="window.location.href='listar_usuarios.php'">Listar Usuarios</button>
+            </div>
+    <?php endif; ?>
+    </div>
     </div>
     <div id="cerrarSesi" style="position: absolute; left:93%; top: 15px;display:none">
         <a href="cerrarSesion.php" style="text-decoration:underline"> Cerrar sesión.</a>
@@ -59,14 +70,7 @@ include("basedatos.php");
             <i class="fas fa-bell"></i> Notificaciones
             </div>
     <!-- Botones adicionales para el dueño -->
-    <?php 
-        
-        if (!empty($_SESSION["Id"]) && $_SESSION["esOwner"] == 1): ?>
-            <div style="position: fixed;z-index:10001 ;left: 50%; top: 15px;">
-                <button onclick="window.location.href='listarUsuarios.php'">Listar Usuarios</button>
-                <button onclick="window.location.href='gestionarModeradores.php'">Gestionar Moderadores</button>
-            </div>
-    <?php endif; ?>
+
 </header>
 <script>
     const iniciosesion = document.getElementById("div-inisesion");
@@ -117,7 +121,6 @@ if (isset($_POST["Iniciars"])) {
         } else {
             $_SESSION["Id"] = $row["id"];
             $_SESSION["username"] = $row["NombreUsuario"];
-            $_SESSION["esOwner"] = $row["esOwner"];
             header("Location: index.php");
         }
     } else {
