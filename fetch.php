@@ -67,7 +67,7 @@ if(isset($_POST["mensaje"])&& !empty($_SESSION["Id"])){
     exit();
 }
 if(isset($_POST['editar'])){
-    $mensaje=$_POST['men']." ((editado))";
-    mysqli_query($conn,"UPDATE mensaje SET mensaje='$mensaje'WHERE id={$_POST['id']}");
+    $mensaje=$_POST['men'];
+    mysqli_query($conn,"UPDATE mensaje SET mensaje='$mensaje',editado='1' WHERE id={$_POST['id']}");
 }
 ?>

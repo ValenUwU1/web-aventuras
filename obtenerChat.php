@@ -32,7 +32,16 @@
                                 <p><?=$chat['mensaje']?></p>                            
                             </div>
                                 <div class='botones'>
-                                    <em><?=$chat['fecha_envio']?></em>
+                                    <em><?php if($chat['editado']==0)
+                                    {
+                                        echo $chat['fecha_envio'];
+                                    }
+                                    else
+                                    {
+                                        echo $chat['fecha_envio']." ((editado))";
+                                    }
+                                    ?>
+                                    </em>
                                     <?php
                                         if($chat['borrado']==0){
                                     ?>
