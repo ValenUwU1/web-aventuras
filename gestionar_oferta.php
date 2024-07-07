@@ -44,10 +44,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo "<script>window.location.replace('mensajesPriv.php' + '?LeChat=' + $id);</script>";
         }
     }
-    else{
-        echo '<script>alert("Acción no válida."); window.location.href = "Ofertas.php";</script>';
-    }
-}
     if ($accion === 'aceptar') {
         // Obtener los datos de la publicación desde la base de datos
         $sql = "SELECT * FROM publicacion WHERE id = ?";

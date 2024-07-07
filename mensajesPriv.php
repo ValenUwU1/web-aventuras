@@ -38,7 +38,7 @@ if (empty($_SESSION["Id"])) {
                     $id_involucrado = ($row['id_involucrado1'] == $id_usuario) ? $row['id_involucrado2'] : $row['id_involucrado1'];
                     $usuarioQuery = "SELECT * FROM usuario WHERE id = $id_involucrado";
                     $queryUsuario = mysqli_query($conn, $usuarioQuery);
-                    if (mysqli_num_rows($result) == 0) {
+                    if (mysqli_num_rows($queryChat) == 0) {
                         echo "<p>No tenes chats.</p>";
                     } else {
                     if ($result = mysqli_fetch_assoc($queryUsuario)) {
@@ -47,7 +47,7 @@ if (empty($_SESSION["Id"])) {
                                     <img src='{$result['DirFotoPerfil']}' alt='Foto de perfil' class='fotoMini'/>
                                 </div>
                                         <h3>{$result['NombreUsuario']}</h3>
-                               </div>";
+                             </div>";
                     }
                 }
                 }

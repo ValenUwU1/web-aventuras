@@ -57,8 +57,16 @@ include("basedatos.php");
         ?>
         <a href="notificaciones.php" style="text-decoration: none; color: black;">
             <i class="fas fa-bell"></i> Notificaciones
-        </a>
-    </div>
+            </div>
+    <!-- Botones adicionales para el dueño -->
+    <?php 
+        
+        if (!empty($_SESSION["Id"]) && $_SESSION["esOwner"] == 1): ?>
+            <div style="position: fixed;z-index:10001 ;left: 50%; top: 15px;">
+                <button onclick="window.location.href='listarUsuarios.php'">Listar Usuarios</button>
+                <button onclick="window.location.href='gestionarModeradores.php'">Gestionar Moderadores</button>
+            </div>
+    <?php endif; ?>
 </header>
 <script>
     const iniciosesion = document.getElementById("div-inisesion");
@@ -109,6 +117,7 @@ if (isset($_POST["Iniciars"])) {
         } else {
             $_SESSION["Id"] = $row["id"];
             $_SESSION["username"] = $row["NombreUsuario"];
+            $_SESSION["esOwner"] = $row["esOwner"];
             header("Location: index.php");
         }
     } else {
