@@ -1,6 +1,3 @@
-
-<link rel="stylesheet" href="public/Style.css">
-<link rel="stylesheet" href="public/StyleChat.css">
 <?php        
 date_default_timezone_set('America/Argentina/Buenos_Aires');
 
@@ -11,10 +8,34 @@ if(isset($_POST['borrar'])){
     $fecha=strtotime($result['fecha_envio']);
     $fechaLim= strtotime("-15 minutes");
     if($fecha>$fechaLim){
-            mysqli_query($conn,"UPDATE mensaje SET borrado=1,mensaje='((borrado))' where id={$_POST['id']}");
+        mysqli_query($conn,"UPDATE mensaje SET borrado=1,mensaje='((borrado))' where id={$_POST['id']}");
+        $data=true;
+        echo json_encode($data);
     }
+    else{
+        $data=false;
+        echo json_encode($data);
+    }
+    exit();
 }
-elseif(isset($_POST["mensaje"])&& !empty($_SESSION["Id"])){
+if(isset($_POST['editarCheck'])){
+    $result = mysqli_fetch_assoc(mysqli_query($conn, "SELECT * FROM mensaje WHERE id={$_POST['id']}"));
+    if(!$result){
+        echo json_encode(false);
+    } else {
+        $fecha = strtotime($result['fecha_envio']);
+        $fechaLim = strtotime("-15 minutes");
+        if($fecha > $fechaLim){
+            $data=$result['mensaje'];
+            echo json_encode($data);
+        } else {
+            $data=false;
+            echo json_encode($data);
+        }
+    }
+    exit();
+}
+if(isset($_POST["mensaje"])&& !empty($_SESSION["Id"])){
     $mensaje = $_POST["mensaje"];
     $chat = $_POST["chat"];
     $de = $_SESSION["Id"];
@@ -45,10 +66,8 @@ elseif(isset($_POST["mensaje"])&& !empty($_SESSION["Id"])){
     <?php 
     exit();
 }
-function check($id){
-    $result=mysqli_fetch_assoc(mysqli_query($conn,"SELECT * from mensaje where id=$id"));
-    $fecha=strtotime($result['fecha_envio']);
-    $fechaLim= strtotime("-15 minutes");
-    return $fecha > $fechaLim;
+if(isset($_POST['editar'])){
+    $mensaje=$_POST['men']." ((editado))";
+    mysqli_query($conn,"UPDATE mensaje SET mensaje='$mensaje'WHERE id={$_POST['id']}");
 }
 ?>

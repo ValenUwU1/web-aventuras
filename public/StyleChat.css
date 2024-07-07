@@ -105,8 +105,17 @@ p {
     word-wrap: 2;
     overflow-y: auto;
 }
+#botonEdit{
+    width:auto;
+    display:none;
+}
 #botonMen{
     width:15%;
+    flex: 1;
+}
+#cancelarEdit{
+    width:auto;
+    display:none;
 }
 .textoChat{
     display:flex;
