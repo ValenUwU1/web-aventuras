@@ -100,3 +100,9 @@ include("basedatos.php");
 </body>
 
 </html>
+<?php
+    $result=mysqli_query($conn,"SELECT * FROM notificacion WHERE usuarioID={$_SESSION['Id']};");
+    while($row=mysqli_fetch_assoc($result)){
+        mysqli_query($conn,"UPDATE notificacion SET leido=1 WHERE id={$row['id']}");
+    }
+?>

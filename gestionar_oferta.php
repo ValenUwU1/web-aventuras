@@ -25,7 +25,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idUsuarioOfertante = $oferta['idUsuario'];
     $idPublicacion = $oferta['idPublicacion'];
     $stmt_oferta->close();
-
+    if($accion==="Mensaje"){
+        $chatCrear=mysqli_query($conn,"SELECT o.idUsuario,p.usuarioID FROM oferta o INNER JOIN publicacion p ON o.idPublicacion=p.id WHERE o.id=$ofertaID;");
+        $chatCrear=mysqli_fetch_assoc($chatCrear);
+        $id1=$chatCrear["idUsuario"];
+        $id2=$chatCrear["usuarioID"];
+        $sqlQuery=mysqli_query($conn,"SELECT * FROM chat WHERE (id_involucrado1=$id2 AND id_involucrado2=$id1) OR (id_involucrado1=$id1 AND id_involucrado2=$id2);");
+        if(mysqli_num_rows($sqlQuery)>0){
+            $result=mysqli_fetch_assoc($sqlQuery);
+            $id=$result["id"];
+            echo "<script>window.location.replace('mensajesPriv.php' + '?LeChat=' + $id);</script>";
+        }
+        else{
+            mysqli_query($conn,"INSERT INTO chat (id_involucrado1,id_involucrado2) VALUES ($id1,$id2);");
+            $result=mysqli_query($conn,"SELECT id from chat WHERE (id_involucrado1=$id1 and id_involucrado2=$id2);");
+            $resultado=mysqli_fetch_assoc($result);
+            $id=$resultado["id"];
+            echo "<script>window.location.replace('mensajesPriv.php' + '?LeChat=' + $id);</script>";
+        }
+    }
+    else{
+        echo '<script>alert("Acción no válida."); window.location.href = "Ofertas.php";</script>';
+    }
+}
     if ($accion === 'aceptar') {
         // Obtener los datos de la publicación desde la base de datos
         $sql = "SELECT * FROM publicacion WHERE id = ?";
@@ -140,7 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt_insertar_notificacion->close();
 
         echo '<script>alert("Oferta rechazada."); window.location.href = "Ofertas.php";</script>';
-    } else {
+    } 
+    else {
         echo '<script>alert("Acción no válida."); window.location.href = "Ofertas.php";</script>';
     }
 } else {

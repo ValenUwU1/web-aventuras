@@ -164,7 +164,9 @@
             }
         }
         else{
+            echo "<div class='cont1' style=' background-color:white; border-radius:5px'>";
             echo "<p>No hay ningun intercambio realizado.</p>";
+            echo "</div>";
         }
         ?>
     </div>
@@ -303,7 +305,8 @@
 ?>
 <script>
 function mostrarValorar(){
-    document.getElementById("priv").style.display="hidden";
+    document.getElementById("priv").style.display="none";
+    document.getElementById("hola").style.display="none";
     document.getElementById("mostrarValoracion").style.visibility="visible";
 }
 document.addEventListener("DOMContentLoaded", function() {

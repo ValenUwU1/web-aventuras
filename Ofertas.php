@@ -86,6 +86,7 @@ $usuarioID = $_SESSION['Id'];
                     echo '<form action="gestionar_oferta.php" method="POST">';
                     echo '<input type="hidden" name="ofertaID" value="' . htmlspecialchars($oferta['ofertaID']) . '">';
                     echo '<input type="hidden" name="idEmbarcacionPublicada" value="' . htmlspecialchars($oferta['idEmbarcacionPublicada']) . '">';
+                    echo '<button type"submit" name="accion" value="Mensaje">Enviar mensaje al dueño</button>';
                     echo '<button type="submit" name="accion" value="aceptar">Aceptar</button>';
                     echo '<button type="submit" name="accion" value="rechazar">Rechazar</button>';
                     echo '</form>';
@@ -146,6 +147,7 @@ $usuarioID = $_SESSION['Id'];
                             echo '<form action="cancelar_oferta.php" method="POST">';
                             echo '<input type="hidden" name="ofertaID" value="' . htmlspecialchars($oferta['ofertaID']) . '">';
                             echo '<button type="submit" name="accion" value="cancelar">Cancelar oferta realizada</button>';
+                            echo '<button type"submit" name="accion" value="Mensaje">Enviar mensaje al dueño</button>';
                             echo '</form>';
                         }
                     } else {

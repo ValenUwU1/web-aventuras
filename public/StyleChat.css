@@ -1,13 +1,20 @@
 #divmain{
     margin-left:15%; padding:5px; background-color:whitesmoke; display:flex; height:750px; flex-direction:row;
 }
+p{
+}
 #divchat{
+    resize: horizontal;
     display:flex;
     height: 100%;
     width:30%;
     flex-direction: column;
     border: 1px solid black;
     overflow-y: auto;
+}
+p {
+    word-break: break-all;
+    white-space: normal;
 }
 .chat{
     width: 100%;
@@ -33,25 +40,60 @@
     flex-direction: column;
     padding:20px;
     overflow-y: auto;
+    overflow-x:;
     gap:20px;
 }
-
-.menEmisor{
-    margin-left: auto;
-    background-color: aquamarine;
-    border-radius: 10px;
+.botonBorrar{
+    display:flex;
+    background-color: crimson;
     height: fit-content;
     width: fit-content;
+    border-radius: 7px;
+}
+.botonEditar{
     display:flex;
+    background-color: lightblue;
+    height: fit-content;
+    width: fit-content;
+    border-radius: 7px;
+}
+.botones{
+    display:flex;
+    margin-left: auto;
+}
+.menEmisorEncubridor{
+    display: flex;
+    flex-direction: column;
+    margin-left: auto;
+}
+.menReceptorEncubridor{
+    display: flex;
+    flex-direction: column;
+    margin-right: auto;
+}
+.menEmisor{
+    margin-left: auto;
+    border-radius: 10px;
+    height: fit-content;
+    width: auto;
+    overflow:hidden;
+    flex-direction: row;
+    display:flex;
+    max-width: 400px;
     padding:4px;
     padding-right: 30px;
+    box-shadow: 2px 2px grey;
+    background-image: linear-gradient(aquamarine,lightblue);
 }
 .menReceptor{
     margin-right: auto;
-    background-color: gray;
+    background-image:linear-gradient(darkslategrey,grey);
+    box-shadow: -2px 2px grey;
     border-radius: 10px;
     height: fit-content;
-    width: fit-content;
+    width: auto;
+    overflow:hidden;
+    max-width: 400px;
     display:flex;
     padding:4px;
     padding-left: 30px;

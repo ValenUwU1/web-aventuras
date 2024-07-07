@@ -1,7 +1,20 @@
-<?php
+
+<link rel="stylesheet" href="public/Style.css">
+<link rel="stylesheet" href="public/StyleChat.css">
+<?php        
+date_default_timezone_set('America/Argentina/Buenos_Aires');
+
 include("basedatos.php");
 session_start();
-if(isset($_POST["mensaje"])&& !empty($_SESSION["Id"])){
+if(isset($_POST['borrar'])){    
+    $result=mysqli_fetch_assoc(mysqli_query($conn, "SELECT * from mensaje where id={$_POST['id']}"));
+    $fecha=strtotime($result['fecha_envio']);
+    $fechaLim= strtotime("-15 minutes");
+    if($fecha>$fechaLim){
+            mysqli_query($conn,"UPDATE mensaje SET borrado=1,mensaje='((borrado))' where id={$_POST['id']}");
+    }
+}
+elseif(isset($_POST["mensaje"])&& !empty($_SESSION["Id"])){
     $mensaje = $_POST["mensaje"];
     $chat = $_POST["chat"];
     $de = $_SESSION["Id"];
@@ -12,17 +25,30 @@ if(isset($_POST["mensaje"])&& !empty($_SESSION["Id"])){
     // Vincular parámetros y ejecutar la consulta
     mysqli_stmt_bind_param($stmt, "iis", $de, $chat, $mensaje);
     mysqli_stmt_execute($stmt);
-
+    $ultimoID= $conn->insert_id;
     // Verificar si la consulta se ejecutó correctamente
     if (mysqli_stmt_affected_rows($stmt) == 0) {
         echo "Error al enviar el mensaje";
+    }   
+    $nombre=mysqli_fetch_assoc(mysqli_query($conn,"SELECT NombreUsuario FROM usuario WHERE id={$_SESSION['Id']}"));
+    $para=mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM chat WHERE id=$chat"));
+    if($para["id_involucrado1"]==$_SESSION["Id"]){
+        $para=$para["id_involucrado2"];
     }
-
-    // Cerrar la consulta preparada
-    mysqli_stmt_close($stmt);
+    else{
+        $para=$para["id_involucrado1"];
+    }
+    $mensaje_notificacion = "Tenes un nuevo mensaje de {$nombre['NombreUsuario']}.";
+    mysqli_query($conn,"INSERT INTO notificacion (usuarioID, mensaje) VALUES ('$para',' $mensaje_notificacion')");
+    $fecha=mysqli_fetch_assoc(mysqli_query($conn,"SELECT * FROM mensaje WHERE id=$ultimoID"));
+    ?>
+    <?php 
     exit();
 }
-if(!empty($_SESSION["Id"]) &&isset($_POST["recibir"])){
-
+function check($id){
+    $result=mysqli_fetch_assoc(mysqli_query($conn,"SELECT * from mensaje where id=$id"));
+    $fecha=strtotime($result['fecha_envio']);
+    $fechaLim= strtotime("-15 minutes");
+    return $fecha > $fechaLim;
 }
 ?>

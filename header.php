@@ -13,7 +13,7 @@ include("basedatos.php");
 </head>
 <header class="titulo">
     <div id="placeholderInicioSesionYUsuario" style="position: absolute;">
-        <button style="display: block;left:0;position:fixed;top:15px;" onclick="moverMd()">MD</button>
+        <button style="display: none;left:0;position:fixed;top:15px;" id="MD" onclick="moverMd()">MD</button>
         <button id="iniciarsesion" style="display:block;">
             <h3> Iniciar Sesión </h3>
         </button>
@@ -80,6 +80,7 @@ include("basedatos.php");
         document.getElementById("Bienvenida").style.display = "block";
         document.getElementById("cerrarSesi").style.display = "block";
         document.getElementById("notif").style.display="block";
+        document.getElementById("MD").style.display="block";
     }
     function moverMd(){
         

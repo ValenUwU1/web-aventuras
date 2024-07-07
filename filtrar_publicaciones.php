@@ -53,5 +53,5 @@ if ($resultado->num_rows > 0) {
     echo '<li>No se encontraron publicaciones.</li>';
 }
 echo '</ul>';
-
 $conn->close();
+?>

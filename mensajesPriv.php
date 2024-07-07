@@ -1,3 +1,4 @@
+
 <?php
 include("basedatos.php");
 include("header.php");
@@ -30,7 +31,7 @@ if (empty($_SESSION["Id"])) {
             $queryChat = mysqli_query($conn, $chatQuery);
             
             if (mysqli_num_rows($queryChat) == 0) {
-                echo "<p>No tenés ningún chat. Para empezar, anda al perfil de alguien y presioná 'enviar mensaje'.</p>";
+                echo "<p>No tenés ningún chat. Para empezar, anda a mis ofertas y presioná 'enviar mensaje al dueño'.</p>";
             } else {
                 while ($row = mysqli_fetch_assoc($queryChat)) {
                     // Obtener la información del otro usuario en el chat
@@ -46,7 +47,7 @@ if (empty($_SESSION["Id"])) {
                                     <img src='{$result['DirFotoPerfil']}' alt='Foto de perfil' class='fotoMini'/>
                                 </div>
                                         <h3>{$result['NombreUsuario']}</h3>
-                            </div>";
+                               </div>";
                     }
                 }
                 }
@@ -58,21 +59,11 @@ if (empty($_SESSION["Id"])) {
                 <?php
                 $chatId = $_GET["LeChat"] ?? 0;
                 $result = mysqli_query($conn, "SELECT * FROM mensaje WHERE id_chat=$chatId");
-
-                if (mysqli_num_rows($result) == 0) {
-                    echo "<p>No se ha abierto ningún chat.</p>";
-                } else {
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        if ($row["id_emisor"] == $id_usuario) {
-                            echo "<div class='menEmisor'>
-                                    <p>{$row['mensaje']}</p>
-                                </div>";
-                        } else {
-                            echo "<div class='menReceptor'>
-                                    <p>{$row['mensaje']}</p>
-                                </div>";
-                        }
-                    }
+                if($chatId==0){
+                    echo "<p id='hola'>No se ha abierto ningún chat.</p>";
+                }
+                elseif (mysqli_num_rows($result) == 0) {
+                    echo "<p id='hola'>No hay mensajes.</p>";
                 }
                 ?>
             </div>
@@ -85,31 +76,43 @@ if (empty($_SESSION["Id"])) {
 </body>
 </html>
 <script>
+function editar(id){
+    console.log("OK2");
+
+}
 function redirigir(id){
     // Simulate an HTTP redirect:
-    window.location.replace(window.location + "?LeChat=" +id  );
+    window.location.replace("mensajesPriv.php"+ "?LeChat=" +id  );
 }
+$(document).on('click','.botonBorrar',function(){
+    var id1=$(this).attr('data');
+    var fecha= $(this).attr('fecha');
+    console.log(fecha);
+    if(confirm('Seguro que queres borrar este mensaje?')){
+        $.post("fetch.php",{
+            borrar:true,
+            id:id1
+        });
+}
+});
 $(document).ready(function() {
   /*  let fetchdata = function () {
- 
+    
     // Manejar el click del botón #botonMen*/
     $("#botonMen").on('click', function() {
         var mens = $("#inputMens").val();
         if (mens === "") return;
-
-        // Realizar la solicitud POST para enviar el mensaje
+        else{
+        }
+        // Realizar la solicituds POST para enviar el mensaje
         $.post("fetch.php", {
             mensaje: mens,
             chat: <?=$chatId?> // Asegúrate de que $chatId esté definido correctamente
         }, function(response) {
             // Manejar la respuesta del servidor
             console.log(response); // Para depuración
-            $("#areaMensajes").append('<div class="menEmisor"><p>'+ mens +'</p></div>');
             $("#inputMens").val("");
-
-            // Hacer scroll al final del área de mensajes
-            var areaMensajes = document.getElementById("areaMensajes");
-            areaMensajes.scrollTop = areaMensajes.scrollHeight;
+            xd();
         }).fail(function() {
             // Manejar el caso cuando la solicitud falla
             console.error('Error en la solicitud AJAX');
@@ -117,18 +120,30 @@ $(document).ready(function() {
         });
     });
 });
+function xd(){
+    if(document.getElementById("hola")!=null)document.getElementById("hola").style.display="none";
+    var areaMensajes = document.getElementById("areaMensajes");
+    areaMensajes.scrollTop = areaMensajes.scrollHeight;
+}
 $(document).ready(function() {
     // Definir una función para obtener los mensajes del chat
+    datapasada="";
     function fetchdata() {
         $.post("obtenerChat.php", {
             id_chat: <?=$chatId?>
-        }, function(data, status) {
-            $("#areaMensajes").append(data);
+        }, function(data) {
+            if(data!==datapasada){
+                $("#areaMensajes").html(data);
+            }
+            else{
+                xd();
+                datapasada=data;
+            }
         });
     }
 
     // Llamar a fetchdata inicialmente y luego configurar setInterval para llamadas periódicas
     fetchdata();
-    setInterval(fetchdata, 500);
+    setInterval(fetchdata, 1000);
 });
 </script>
