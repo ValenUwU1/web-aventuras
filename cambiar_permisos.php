@@ -10,6 +10,17 @@ if (empty($_SESSION["Id"]) || $_SESSION["esOwner"] != 1) {
 //
 if (isset($_POST["id"]) && isset($_POST["darPermisos"]))
 {
+    $sql="SELECT * FROM usuario";
+    $resultado=mysqli_query($conn,$sql);
+    $contador=0;
+    $bool=false;
+    while($row=mysqli_fetch_assoc($resultado)){
+        if($row["esMod"]){
+            $contador++;
+        }
+    }
+    if($contador<6){
+    $bool=true;
     $id = $_POST["id"];
     $permiso = 1;
     $sqlQuery = "UPDATE usuario SET esMod = $permiso WHERE id = $id";
@@ -17,7 +28,9 @@ if (isset($_POST["id"]) && isset($_POST["darPermisos"]))
 ?>
     <button class="quitarPermisos"  data=<?=$id?>>Quitar permisos de moderador</button>
 <?php
-exit();
+    }
+    echo json_encode($bool);
+    exit();
 }
 if (isset($_POST["id"]) && isset($_POST["quitarPermisos"])) 
 {

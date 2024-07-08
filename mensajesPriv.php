@@ -31,22 +31,24 @@ if (empty($_SESSION["Id"])) {
             $queryChat = mysqli_query($conn, $chatQuery);
             
             if (mysqli_num_rows($queryChat) == 0) {
-                echo "<p>No tenés ningún chat. Para empezar, anda a mis ofertas y presioná 'enviar mensaje al dueño'.</p>";
+                echo "<p>No hay conversaciones.</p>";
             } else {
                 while ($row = mysqli_fetch_assoc($queryChat)) {
                     // Obtener la información del otro usuario en el chat
                     $id_involucrado = ($row['id_involucrado1'] == $id_usuario) ? $row['id_involucrado2'] : $row['id_involucrado1'];
                     $usuarioQuery = "SELECT * FROM usuario WHERE id = $id_involucrado";
                     $queryUsuario = mysqli_query($conn, $usuarioQuery);
-                    if (mysqli_num_rows($queryChat) == 0) {
-                        echo "<p>No tenes chats.</p>";
-                    } else {
+                    if (mysqli_num_rows($queryChat) != 0) {
                     if ($result = mysqli_fetch_assoc($queryUsuario)) {
+                        $nombre="[Usuario bloqueado]";
+                        if(!$result['baneado']){
+                            $nombre=$result['NombreUsuario'];
+                        }
                         echo "<div class='chat' onclick='redirigir({$row['id']})'>
                                 <div>
                                     <img src='{$result['DirFotoPerfil']}' alt='Foto de perfil' class='fotoMini'/>
                                 </div>
-                                        <h3>{$result['NombreUsuario']}</h3>
+                                        <h3>{$nombre}</h3>
                              </div>";
                     }
                 }

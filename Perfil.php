@@ -9,16 +9,24 @@
         $id=$_SESSION["Id"];
         if(!empty($_GET["idBuscar"])){
             $idajeno=$_GET["idBuscar"];
+            $ajeno=true;
         }
         else{
             $idajeno=$id;
+            $ajeno=false;
         }
         $sqlQuery="SELECT * FROM usuario WHERE id = '$idajeno'";
         $result= mysqli_query($conn ,$sqlQuery);
         if(mysqli_num_rows($result)>0){
             $row=mysqli_fetch_assoc($result);
-            $nombreMostrar= $row["NombreUsuario"];
-            
+            $elJefe=$row["esOwner"];
+            $ban=$row["baneado"];
+            if(!$ban){
+                $nombreMostrar= $row["NombreUsuario"];    
+            }
+            else{
+                $nombreMostrar="[Usuario baneado por la administración]";
+            }
             if($row["DirFotoPerfil"]==null){
                 $fotoPerfil="public/img/Default.jpg";
             }
@@ -125,6 +133,7 @@
             <button onclick="mostrarModPerfil()"style="background-color:darkcyan;color:white;cursor:pointer; width:fit-content; height:fit-content;display:flex;">Editar Perfil</button><br>
             </div>
             <button onclick="mostrarIntercambios()" id="hola" style="background-color:darkcyan;color:white; cursor:pointer;width:fit-content; height:fit-content;display:flex;">Mostrar Historial</button>
+            <button id="bloquear" style="visibility:hidden;background-color:darkcyan;color:white; cursor:pointer;width:fit-content; height:fit-content;display:flex;" data=<?=$idajeno?>>Bloquear usuario</button>
         </div>
         </div>
     </div>
@@ -304,6 +313,17 @@
     }
 ?>
 <script>
+$("#bloquear").on("click",function(){
+    id=$(this).attr("data");
+    console.log(id);
+    $.post("bloquearUsuario.php",{
+        id:id,
+        bloquear:true
+    },function (response){
+        console.log("Ok" + response);
+        window.location.replace("Perfil.php?idBuscar="+id);
+    });
+});
 function mostrarValorar(){
     document.getElementById("priv").style.display="none";
     document.getElementById("hola").style.display="none";
@@ -423,7 +443,7 @@ function submitRating() {
         formbarco.style.display="none";
     }
     function mostrarMisBarcos(){
-        document.getElementById("priv").style.display="visible";
+        document.getElementById("priv").style.visibility="visible";
         document.getElementById("misBarcos").style.display="flex";
         document.getElementById("botonPerfil").style.display="flex";
     }
@@ -436,6 +456,9 @@ function submitRating() {
     }
     function cancelarBorrado(){
         document.getElementById("borrar_barco").style.display="none";
+    }
+    function mostrarInters(){
+        document.getElementById("hola").style.display="flex";
     }
     function editarEmbarcacion(button) {
         var idEditar = button.getAttribute('data-id');
@@ -462,6 +485,9 @@ function submitRating() {
         cancelarBorrado();
         cerrarIntercambios();
         cerrarFormBarco();
+    }
+    function bloquearUsuarioMostrar(){
+        document.getElementById("bloquear").style.visibility="visible";
     }
     function cerrarFor(){
         divfor.style.display="none";
@@ -530,11 +556,16 @@ function submitRating() {
 ?>
 
 <?php 
-    if($idajeno!=$_SESSION["Id"]){
+    if($ajeno && !$ban){
         echo "<script> mostrarValorar(); </script>";
+        if($_SESSION['esMod']){
+             echo "<script> mostrarInters(); </script>";
+             if(!$elJefe){
+                 echo "<script> bloquearUsuarioMostrar(); </script>";
+             }
+        }
     }
-    else{
-        
+    if(!$ajeno){
         echo "<script> mostrarMisBarcos(); </script>";
     }
 ?>

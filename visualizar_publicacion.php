@@ -141,12 +141,13 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             if (isset($_POST['action'])) {
                 $action = $_POST['action'];
+                $esMod = isset($_SESSION['esMod']) && $_SESSION['esMod'] == 1;
 
                 switch ($action) {
                     case 'eliminar':
                         if (isset($_POST['comentario_id'])) {
                             $comentarioID = $_POST['comentario_id'];
-                            eliminarComentario($conn, $comentarioID, $usuarioID);
+                            eliminarComentario($conn, $comentarioID, $usuarioID, $esMod);
                         }
                         break;
                     case 'comentar':
@@ -175,16 +176,28 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
             }
         }
 
-        function eliminarComentario($conn, $comentarioID, $usuarioID)
+        function eliminarComentario($conn, $comentarioID, $usuarioID, $esMod)
         {
-            // Validar tiempo transcurrido
-            if (!validarTiempo($conn, $comentarioID, $usuarioID)) {
+            // Validar tiempo transcurrido solo si no es administrador
+            if (!$esMod && !validarTiempo($conn, $comentarioID, $usuarioID)) {
                 echo '<script>alert("No puedes eliminar un comentario pasado los 15 minutos"); window.location.href = "index.php";</script>';
                 exit();
             }
-
-            $stmt = $conn->prepare("UPDATE comentario SET contenido = '[Este comentario ha sido eliminado por el autor]' WHERE id = ? AND usuarioID = ?");
-            $stmt->bind_param("ii", $comentarioID, $usuarioID);
+            
+            if ($usuarioID == $_SESSION["Id"]){
+                $mensajeEliminado = '[Este comentario ha sido eliminado por el autor]' ;
+            }/*
+                $stmt = $conn->prepare("UPDATE comentario SET contenido = ? WHERE id = ? AND (usuarioID = ? OR ?)");
+                $stmt->bind_param("siii", $mensajeEliminado, $comentarioID, $usuarioID, $esMod);
+                $stmt->execute();
+                $stmt->close();
+            }*/
+            else{
+                // Marcar el comentario como eliminado 
+                $mensajeEliminado = '[Este comentario ha sido eliminado por el administrador]';
+            }
+            $stmt = $conn->prepare("UPDATE comentario SET contenido = ? WHERE id = ?");
+            $stmt->bind_param("si", $mensajeEliminado, $comentarioID);
             $stmt->execute();
             $stmt->close();
         }
@@ -318,10 +331,11 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
                 echo "<p>{$row['contenido']}</p>";
                 echo "<p><em>{$row['fecha']}</em></p>";
 
-                if ($row['usuarioID'] == $usuarioID) {
-                    echo "<a href='#' class='editar-btn' data-id='{$row['id']}'>Editar</a> | ";
+                if ($row['usuarioID'] == $usuarioID || $_SESSION["esMod"] == 1){
                     echo "<a href='#' class='eliminar-btn' data-id='{$row['id']}'>Eliminar  | </a>";
-                }
+                    if ($row['usuarioID'] == $usuarioID) {
+                        echo "<a href='#' class='editar-btn' data-id='{$row['id']}'>Editar</a> | ";
+                }}
 
                 echo "<a href='#' class='responder-btn'>Responder</a>";
                 echo "<div class='respuesta-form' style='display: none;'>";

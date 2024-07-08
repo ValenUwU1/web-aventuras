@@ -17,17 +17,20 @@ include("basedatos.php");
         <button id="iniciarsesion" style="display:block;">
             <h3> Iniciar Sesión </h3>
         </button>
-        <div style=" left:3%; position:fixed; top:5px">   
-        <h3 id="Bienvenida" style="display:none;>Bienvenido <?php echo $_SESSION["username"]; ?></h3> <?php 
-        $id = $_SESSION["Id"];
-        $result = mysqli_query($conn, "SELECT * FROM usuario WHERE id = '$id'");
-        $valor = mysqli_fetch_assoc($result);
-        $_SESSION['esOwner']=true;
-        if (!empty($_SESSION["Id"]) && $_SESSION['esOwner']): ?>
-            <div style="position: fixed;z-index:10001 ;left: 50%; top: 15px;">
-                <button onclick="window.location.href='listar_usuarios.php'">Listar Usuarios</button>
+    <!-- Botones adicionales para el dueño -->
+        <div style=" left:3%; position:fixed; top:5px;display:flex;flex-direction:row;align-items:center;gap:15px">   
+             <h3 id="Bienvenida" style="display:none;">Bienvenido <?php echo $_SESSION["username"]; ?></h3> 
+             <?php 
+            if(isset($_SESSION['Id'])){
+            $id = $_SESSION["Id"];
+            $result = mysqli_query($conn, "SELECT * FROM usuario WHERE id = '$id'");
+            $valor = mysqli_fetch_assoc($result);
+            $_SESSION['esOwner']=$valor["esOwner"];
+            if ( $_SESSION['esOwner']): ?>
+                <div style="display:flex; width:fit-content;height:fit-content;top:50%">
+                    <button style="display:flex" onclick="window.location.href='listar_usuarios.php'">Listar Usuarios</button>
             </div>
-    <?php endif; ?>
+    <?php endif;} ?>
     </div>
     </div>
     <div id="cerrarSesi" style="position: absolute; left:93%; top: 15px;display:none">
@@ -69,7 +72,6 @@ include("basedatos.php");
         <a href="notificaciones.php" style="text-decoration: none; color: black;">
             <i class="fas fa-bell"></i> Notificaciones
             </div>
-    <!-- Botones adicionales para el dueño -->
 
 </header>
 <script>
@@ -89,8 +91,8 @@ include("basedatos.php");
 
     function ocultarIniciarSesion() {
         boton.style.display = "none";
-        document.getElementById("Bienvenida").style.display = "block";
-        document.getElementById("cerrarSesi").style.display = "block";
+        document.getElementById("Bienvenida").style.display = "flex";
+        document.getElementById("cerrarSesi").style.display = "flex";
         document.getElementById("notif").style.display="block";
         document.getElementById("MD").style.display="block";
     }
@@ -118,9 +120,14 @@ if (isset($_POST["Iniciars"])) {
     if (mysqli_num_rows($result) > 0) {
         if (!(password_verify($contra, $row["Contrasenia"]))) {
             echo '<script>alert("La contraseña o el nombre de usuario son incorrectos");</script>';
-        } else {
+        } 
+        elseif($row["baneado"]){
+            echo '<script>alert("No se puede acceder a la cuenta; razón: fuiste bloqueado.");</script>';
+        }else {
             $_SESSION["Id"] = $row["id"];
             $_SESSION["username"] = $row["NombreUsuario"];
+            $_SESSION["esOwner"] = $row["esOwner"];
+            $_SESSION["esMod"] = $row["esMod"]; 
             header("Location: index.php");
         }
     } else {

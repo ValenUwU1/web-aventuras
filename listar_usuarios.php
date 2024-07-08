@@ -1,10 +1,8 @@
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <?php
-session_start();
-
 include("basedatos.php");
-
+include("header.php");
+include("BarraNavegacion.php");
 // Verificar si el usuario es el dueño de la página
 if (empty($_SESSION["Id"]) || $_SESSION["esOwner"] != 1) {
     header("Location: index.php");
@@ -20,7 +18,7 @@ $result = mysqli_query($conn, "SELECT * FROM usuario");
 <head>
     <title>Listar Usuarios</title>
 </head>
-<body>
+<div style="margin-left:15%;padding:20px;width: auto;height:100%;background-color:whitesmoke;overflow-y: auto;">
     <h1>Lista de Usuarios</h1>
     <table border="1">
         <tr>
@@ -31,51 +29,44 @@ $result = mysqli_query($conn, "SELECT * FROM usuario");
         <tr>
             <td><?php echo $row["NombreUsuario"]; ?></td>
             <td>
-                <?php if ($row["esMod"] == 1): ?>
-                    <button class="quitarPermisos" onclick="quitarPermisos(<?=$row['id']?>)">Quitar permisos de moderador</button>
+                <?php 
+                if(!$row["esOwner"]){if ($row["esMod"] == 1): ?>
+                    <button class="quitarPermisos" data=<?=$row['id']?>>Quitar permisos de moderador</button>
                 <?php else: ?>
-                    <button class="darPermisos"  onclick="darPermisos(<?=$row['id']?>)">Dar permisos de moderador</button>
-                <?php endif; ?>
+                    <button class="darPermisos" data=<?=$row['id']?>>Dar permisos de moderador</button>
+                <?php endif;} ?>
             </td>
         </tr>
         <?php endwhile; ?>
     </table>
+</div>
     <script>
-            function darPermisos(id){
-                $.ajax({
-                    type:"POST",
-                    url:"cambiar_permisos.php",
-                    data:{id: id, darPermisos:true},
-                    data:
-                })
-            }       
-             function quitarPermisos(id){
-
-            }
-            /*$('.quitarPermisos').on("click", function(){
+            $('.quitarPermisos').on("click", function(){
                 id=$(this).attr("data");
-                console.log("quitar" + id);
-                var obj= $(this);
+                if(confirm("¿Seguro que queres quitarle admin a este usuario?")){
                 $.post("cambiar_permisos.php",{
                     quitarPermisos:true,
                     id:id
-                },function (data) {
-                    obj.html(data);
-                    obj.addClass("darPermisos").removeClass("quitarPermisos");
+                },function () {
+                    location.reload();
                 });
+            }
             });
             $('.darPermisos').on("click", function(){
                 id=$(this).attr("data");
-                var obj= $(this);
-                console.log("dar" + id);
+                if(confirm("¿Seguro que queres hacer moderador a este usuario?")){
                 $.post("cambiar_permisos.php",{
                     darPermisos:true,
                     id:id
                 },function (data) {
-                    obj.html(data);
-                    obj.addClass("quitarPermisos").removeClass("darPermisos");
-                });
-            });*/
+                    if(data===false){
+                        alert("Ya hay 5 moderadores en la página, no se pueden agregar más.")
+                    }
+                },"json");
+                
+                location.reload();
+            }
+            });
     </script>
 </body>
 </html>
