@@ -1,11 +1,20 @@
 <?php
-include("header.php");
+session_start();
 include("basedatos.php");
-
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $publicacionID = $_POST['publicacionID'];
-    $usuarioID = $_SESSION["Id"];
-
+    $blockPorMod=false;
+    if(isset($_POST['mod'])){
+        $blockPorMod=true;
+        $usuarioID=mysqli_fetch_assoc(mysqli_query($conn,"SELECT u.id FROM publicacion p INNER JOIN usuario u ON u.id=p.usuarioID where p.id=$publicacionID"));
+        $usuarioID=$usuarioID["id"];
+    }
+    else{
+        $usuarioID = $_SESSION["Id"];
+    }
+    if($blockPorMod){
+        mysqli_query($conn,"INSERT INTO notificacion (mensaje,usuarioID) VALUES ('Tu publicacion fue borrado porque incumplio las normas del sitio.', $usuarioID);");
+    }
     // Verificar si el usuario es el propietario de la publicación
     $sql = "SELECT * FROM publicacion WHERE id = ? AND usuarioID = ?";
     $stmt = $conn->prepare($sql);
@@ -13,9 +22,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt->execute();
     $resultado = $stmt->get_result();
 
-    if ($resultado->num_rows === 0) {
+    if ($resultado->num_rows === 0 && !$blockPorMod) {
         echo '<script>alert("No tienes permisos para eliminar esta publicación."); window.location.href = "index.php";</script>';
-    } else {
+    } 
+    else {
         
         // Obtener los ofertantes de la publicación
         $sql_ofertantes = "SELECT DISTINCT idUsuario FROM oferta WHERE idPublicacion = ?";
@@ -39,8 +49,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         $sqlUpdate = "UPDATE embarcacion a INNER JOIN publicacion b ON a.id=b.embarcacionID SET Ofertado= 0 WHERE a.id= b.embarcacionID";
         mysqli_query($conn, $sqlUpdate);
-
         // Eliminar la publicación
+        echo $usuarioID." ". $publicacionID;
         $sql_delete_publicacion = "DELETE FROM publicacion WHERE id = ? AND usuarioID = ?";
         $stmt_delete_publicacion = $conn->prepare($sql_delete_publicacion);
         $stmt_delete_publicacion->bind_param("ii", $publicacionID, $usuarioID);
@@ -61,14 +71,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             echo '<script>alert("Error al eliminar la publicación."); window.location.href = "index.php";</script>';
         }
-    }
+    
 
-    // Cerrar conexiones y liberar recursos
+    // Cerrar conexiones
     $stmt->close();
     $stmt_delete_ofertas->close();
     $stmt_delete_publicacion->close();
-    $stmt_insert_notificacion->close();
 }
 
 // Cerrar conexión
 $conn->close();
+}

@@ -1,3 +1,4 @@
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <?php
 include("basedatos.php");
 include("header.html");
@@ -128,8 +129,11 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
         if ($publicacion["usuarioID"] != $usuarioID) {
             echo '<form action="realizar_oferta.php" method="GET">';
             echo '<input type="hidden" name="publicacionID" value="' . $publicacionID . '">';
-            echo '<input type="submit" value="Realizar oferta">';
+            echo '<input type="submit" value="Realizar oferta"><br>';
             echo '</form>';
+        }            
+        if($_SESSION['esMod']){
+            echo "<button id='borrarPubli' data={$publicacionID}>Eliminar publicación.</button>";
         }
 
         ob_start(); // Inicia el buffer de salida
@@ -375,6 +379,17 @@ date_default_timezone_set('America/Argentina/Buenos_Aires');
     </div>
 
     <script>
+        $("#borrarPubli").on('click',function(){
+            id=$(this).attr("data");
+            console.log(id);
+            $.post("eliminar_publicacion.php",{
+                publicacionID:id,
+                mod:true
+            },function (response){
+                console.log(response);
+                window.location.replace("index.php");
+            })
+        });
         document.querySelectorAll('.responder-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 // Encuentra el formulario de respuesta asociado al botón
